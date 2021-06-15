@@ -1,8 +1,9 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 var authors []Author = []Author{
@@ -37,7 +38,13 @@ var articles []Article = []Article{
 	},
 }
 
+func RootEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Add("content-type", "application/json")
+	response.Write([]byte(`{ "message" : "hello world"}`))
+}
+
 func main() {
-	data, _ := json.Marshal(authors)
-	fmt.Println(string(data))
+	router := mux.NewRouter()
+	router.HandleFunc("/", RootEndpoint).Methods("Get")
+	http.ListenAndServe(":12345", router)
 }
